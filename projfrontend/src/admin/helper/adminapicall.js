@@ -30,6 +30,34 @@ export const getAllCategory = () => {
     .catch(err => console.log(err));
 };
 
+//get a category
+export const getCategoryById = (categoryId) => {
+    return fetch(`${API}/category/${categoryId}`, {
+        method: 'GET'
+    }) 
+    .then(response => {
+        return response.json();
+    })
+    .catch(err => console.log(err));
+};
+
+//update category
+export const updateCategory = (categoryId, userId, token, category) => {
+    return fetch(`${API}/category/${categoryId}/${userId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(category),
+    })
+      .then((response) => response.json())
+      .catch((err) => console.log(err));
+  };
+
+
+
 //product API calls projbackend->routes->product
 
 //product create in backend
@@ -49,31 +77,31 @@ export const createProduct = (userId, token, product) => {
 };
 
 //get all products
-export const getAllProducts = () => {
+export const getProducts = () => {
     return fetch(`${API}/products`, {
-        method: 'GET'
-    }) 
-    .then(response => {
-        return response.json();
+      method: "GET"
     })
-    .catch(err => console.log(err));
-};
-
-//delete product
-export const removeProduct = (userId, token, productId) => {
+      .then(response => {
+        return response.json();
+      })
+      .catch(err => console.log(err));
+  };
+  
+  //delete a product
+  
+  export const deleteProduct = (productId, userId, token) => {
     return fetch(`${API}/product/${productId}/${userId}`, {
-        method: 'DELETE',
-        headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-            Authorization: ` Bearer ${token}`
-        }
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`
+      }
     })
-    .then(response => {
+      .then(response => {
         return response.json();
-    })
-    .catch(err => console.log(err));
-};
+      })
+      .catch(err => console.log(err));
+  };
 //get a product
 export const getProduct = (productId) => {
     return fetch(`${API}/product/${productId}`, {
@@ -86,12 +114,11 @@ export const getProduct = (productId) => {
 };
 
 //update product
-export const updateProduct = (userId, token, productId, product) => {
+export const updateProduct = (productId, userId, token, product) => {
     return fetch(`${API}/product/${productId}/${userId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
             Accept: "application/json",
-            "Content-Type": "application/json",
             Authorization: ` Bearer ${token}`
         },
         body: product

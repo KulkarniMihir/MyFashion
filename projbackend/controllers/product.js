@@ -150,7 +150,7 @@ exports.getAllProducts = (req, res) => {
                 error: "no product found"
             })
         }
-        res.josn(products)
+        res.json(products)
     })
 };
 

@@ -1,9 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
+import { isAuthenticated } from '../auth/helper/index';
 import Base from '../core/Base';
-import { getAllCategory } from './helper/adminapicall';
+import { getAllCategory, createProduct } from './helper/adminapicall';
+import { Spinner } from "react-bootstrap";
 
 const AddProduct = () => {
+
+  const {user, token} = isAuthenticated();
 
     const [values, setValues] = useState({
         name: "",
@@ -36,28 +40,76 @@ const AddProduct = () => {
     
       const preload = () => {
         getAllCategory().then(data => {
-          console.log(data);
+          //console.log(data);
           if(data.error){
             setValues({...values, error: data.error});
           }
           else{
             setValues({ ...values, categories: data, formData: new FormData() });
-            console.log("Cate:",categories);
+            //console.log("Cate:",categories);
           }
         })
       };
 
       useEffect(() => {
         preload();
-      }, [])
+      }, []);
 
-      const onSubmit = () => {
+      const onSubmit = (event) => {
         //
+        event.preventDefault();
+        setValues({...values, error: false, loading: true})
+        createProduct(user._id, token, formData).then(data => {
+          if(data.error){
+            setValues({...values, error: data.error, loading: false})
+          }else{
+            setValues({
+              ...values,
+              name:"",
+              description: "",
+              price: "",
+              photo: "",
+              stock: "",
+              loading: false,
+              createdProduct: data.name,
+            });
+            setTimeout(() => {
+              setValues({ ...values, getaRedirect: true });
+            }, 2000);
+          }
+        })
+
       };
     
       const handleChange = name => event => {
-        //
+        //filename or value entered
+        const value = name ==="photo" ? event.target.files[0] : event.target.value
+        formData.set(name, value);
+        setValues({...values, error: false, [name]: value})
       };
+
+      const successMessage = () => (
+        <div className="alert alert-success mt-3" style={{display : createdProduct ? "":"none"}}>
+          <h4>{createdProduct} created successfully</h4>
+        </div>
+      );
+
+      const errorMessage = () => (
+        <div className="alert alert-danger mt-3" style={{ display: error ? "" : "none" }}>
+          <h4>{error}</h4>
+        </div>
+      );
+
+      const loadingSpinner = () => {
+        return (
+          <div className="row">
+            <div className="col col-lg-6 col-md-8 col-sm-12">
+              <Spinner animation="border" variant="light" />
+            </div>
+          </div>
+        );
+      };
+
 
     const createProductForm = () => (
         <form>
@@ -107,13 +159,17 @@ const AddProduct = () => {
               placeholder="Category"
             >
               <option>Select</option>
-              <option value="a">a</option>
-              <option value="b">b</option>
+              {categories && 
+                categories.map((cate, index) => (
+                <option key={index} value={cate._id}>{cate.name}</option>
+                ))
+              }
+              
             </select>
           </div>
           <div className="form-group">
             <input
-              onChange={handleChange("quantity")}
+              onChange={handleChange("stock")}
               type="number"
               className="form-control"
               placeholder="Quantity"
@@ -132,6 +188,7 @@ const AddProduct = () => {
       );
 
     return (
+      //perform redirect with timeout
         <Base
             title="Create a Product here"
             description="Welcome to product creation"
@@ -140,7 +197,11 @@ const AddProduct = () => {
             <Link to="/admin/dashboard" className="btn btn-md btn-dark mb-3">Admin Home</Link>
             <div className="row bg-dark text-white rounded">
                 <div className="col-md-8 offset-md-2 mb-3"> 
+                  {loading && loadingSpinner()}
+                  {successMessage()}
+                  {errorMessage()}
                   {createProductForm()}
+                  {getaRedirect && <Redirect to="/admin/dashboard" />}
                 </div>
             </div>
         </Base>
