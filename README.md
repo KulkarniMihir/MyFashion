@@ -8,7 +8,7 @@ MyFashion is a fully functional e-commerce website developed to simplify the pro
 
 - **Frontend:**
   - HTML, CSS, JavaScript
-  - React.js (if applicable)
+  - React.js 
 
 - **Backend:**
   - Node.js
@@ -22,9 +22,6 @@ MyFashion is a fully functional e-commerce website developed to simplify the pro
 
 - **Authentication:**
   - JWT (JSON Web Tokens)
-
-- **Deployment:**
-  - Heroku or AWS (if applicable)
 
 ## Features
 
